@@ -1,0 +1,32 @@
+# robots.txt – adding.marketing
+# Generated for Ad Ding Performance Marketing Agency
+
+User-agent: *
+Allow: /
+
+# Block admin/private paths if they ever exist
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+
+# Allow all major AI crawlers (AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.adding.marketing/sitemap.xml
