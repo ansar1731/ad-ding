@@ -1,12 +1,8 @@
 /* ═══════════════════════════════════════════════════════
-   services.js – Ad Ding Services Page
-   Handles: FAQ accordion, scroll reveal, contact form,
-            newsletter, footer accordions, counter animation
+   services.js – Ad-Ding! Services Page
 ═══════════════════════════════════════════════════════ */
-
 'use strict';
 
-// ─── Utilities ────────────────────────────────────────
 function qs(sel, ctx)  { return (ctx || document).querySelector(sel); }
 function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
 
@@ -14,10 +10,18 @@ function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
 (function () {
   var bar   = qs('#ann-bar');
   var close = qs('#ann-close');
+  var cta   = qs('#ann-cta');
   if (!bar || !close) return;
   close.addEventListener('click', function () {
     bar.classList.add('hidden');
+    bar.setAttribute('aria-hidden', 'true');
   });
+  if (cta) {
+    cta.style.cursor = 'pointer';
+    cta.addEventListener('click', function () {
+      if (typeof window.openModal === 'function') window.openModal();
+    });
+  }
 })();
 
 // ─── Mobile Menu ─────────────────────────────────────
@@ -40,140 +44,94 @@ function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
 })();
 
 // ─── Demo Modal ──────────────────────────────────────
-var modalOverlay = qs('#modal-overlay');
-var modalIframe  = qs('#modal-iframe');
-var DEMO_URL     = 'https://calendly.com/adding-marketing/growth-audit';
-
-function openModal() {
-  if (!modalOverlay || !modalIframe) return;
-  modalIframe.src = DEMO_URL;
-  modalOverlay.classList.add('open');
-  modalOverlay.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  if (!modalOverlay || !modalIframe) return;
-  modalOverlay.classList.remove('open');
-  modalOverlay.setAttribute('aria-hidden', 'true');
-  modalIframe.src = '';
-  document.body.style.overflow = '';
-}
-window.openModal  = openModal;
-window.closeModal = closeModal;
-
-if (modalOverlay) {
-  modalOverlay.addEventListener('click', function (e) {
-    if (e.target === modalOverlay) closeModal();
-  });
-}
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') closeModal();
-});
-
-// // ─── FAQ Accordion ────────────────────────────────────
-// (function () {
-//   var items = qsa('.faq-item');
-//   if (!items.length) return;
-
-//   items.forEach(function (item) {
-//     var btn    = item.querySelector('.faq-q');
-//     var answer = item.querySelector('.faq-a');
-//     if (!btn || !answer) return;
-
-//     btn.addEventListener('click', function () {
-//       var isOpen = item.classList.contains('open');
-
-//       // Close all
-//       items.forEach(function (other) {
-//         other.classList.remove('open');
-//         var otherBtn = other.querySelector('.faq-q');
-//         var otherAns = other.querySelector('.faq-a');
-//         if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-//         if (otherAns) otherAns.style.maxHeight = '0';
-//       });
-
-//       // Open clicked (if it was closed)
-//       if (!isOpen) {
-//         item.classList.add('open');
-//         btn.setAttribute('aria-expanded', 'true');
-//         answer.style.maxHeight = answer.scrollHeight + 'px';
-//       }
-//     });
-//   });
-// })();
-
-// ─── Footer Accordions (mobile) ──────────────────────
 (function () {
-  var headers = qsa('.accordion-header');
-  headers.forEach(function (header) {
-    header.addEventListener('click', function () {
-      var expanded = header.getAttribute('aria-expanded') === 'true';
-      var contentId = header.getAttribute('aria-controls');
-      var content   = contentId ? qs('#' + contentId) : null;
-      var icon      = header.querySelector('.icon');
+  var overlay  = qs('#modal-overlay');
+  var iframe   = qs('#modal-iframe');
+  var DEMO_URL = 'https://calendly.com/adding-marketing/growth-audit';
 
-      // Close all others
-      qsa('.accordion-header').forEach(function (h) {
-        h.setAttribute('aria-expanded', 'false');
-        var cId = h.getAttribute('aria-controls');
-        if (cId) { var c = qs('#' + cId); if (c) c.style.maxHeight = '0'; }
-        var ic = h.querySelector('.icon');
-        if (ic) ic.textContent = '+';
+  function openModal() {
+    if (!overlay || !iframe) return;
+    iframe.src = DEMO_URL;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    if (!overlay || !iframe) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    iframe.src = '';
+    document.body.style.overflow = '';
+  }
+  window.openModal  = openModal;
+  window.closeModal = closeModal;
+
+  if (overlay) {
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+})();
+
+// ─── FAQ Accordion ────────────────────────────────────
+(function () {
+  var items = qsa('.faq-item');
+  if (!items.length) return;
+  items.forEach(function (item) {
+    var btn    = item.querySelector('.faq-q');
+    var answer = item.querySelector('.faq-a');
+    if (!btn || !answer) return;
+    btn.addEventListener('click', function () {
+      var isOpen = item.classList.contains('open');
+      items.forEach(function (other) {
+        other.classList.remove('open');
+        var b = other.querySelector('.faq-q');
+        var a = other.querySelector('.faq-a');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        if (a) a.style.maxHeight = '0';
       });
-
-      if (!expanded) {
-        header.setAttribute('aria-expanded', 'true');
-        if (content) content.style.maxHeight = content.scrollHeight + 'px';
-        if (icon) icon.textContent = '−';
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
       }
+    });
+  });
+})();
+
+// ─── Footer Accordions (consistent class-toggle) ──────
+(function () {
+  qsa('.footer-accordion').forEach(function (acc) {
+    var header = acc.querySelector('.accordion-header');
+    if (!header) return;
+    header.addEventListener('click', function () {
+      var open = acc.classList.toggle('active');
+      header.setAttribute('aria-expanded', open);
     });
   });
 })();
 
 // ─── Scroll Reveal ────────────────────────────────────
 (function () {
-  // Add reveal class to key elements
   var targets = [
-    '.svc-step',
-    '.svc-card',
-    '.svc-tier',
-    '.svc-result-item',
-    '.svc-testi-card',
-    '.faq-item',
-    '.svc-section-eyebrow',
-    '.svc-section-title',
-    '.svc-hero-stats',
-    '.svc-compare-sub'
+    '.svc-step', '.svc-card', '.svc-tier', '.svc-result-item',
+    '.svc-testi-card', '.faq-item', '.svc-section-eyebrow',
+    '.svc-section-title', '.svc-hero-stats', '.svc-compare-sub',
   ];
-
   targets.forEach(function (sel) {
     qsa(sel).forEach(function (el, i) {
       el.classList.add('reveal');
-      // Stagger siblings
-      var delayClass = 'reveal-delay-' + Math.min(i % 5 + 1, 5);
-      el.classList.add(delayClass);
+      el.classList.add('reveal-delay-' + Math.min(i % 5 + 1, 5));
     });
   });
-
-  // IntersectionObserver
   if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
       });
     }, { threshold: 0.12 });
-
-    qsa('.reveal').forEach(function (el) {
-      observer.observe(el);
-    });
+    qsa('.reveal').forEach(function (el) { observer.observe(el); });
   } else {
-    // Fallback: show all
-    qsa('.reveal').forEach(function (el) {
-      el.classList.add('visible');
-    });
+    qsa('.reveal').forEach(function (el) { el.classList.add('visible'); });
   }
 })();
 
@@ -181,132 +139,95 @@ document.addEventListener('keydown', function (e) {
 (function () {
   var counters = qsa('.svc-result-num');
   if (!counters.length) return;
-
   function animateCounter(el) {
-    var text = el.textContent || '';
-    // Extract number and suffix
+    var text  = el.textContent || '';
     var match = text.match(/^([\d.]+)(.*)$/);
     if (!match) return;
-    var target  = parseFloat(match[1]);
-    var suffix  = el.querySelector('.svc-result-plus') ? el.querySelector('.svc-result-plus').outerHTML : '';
+    var target = parseFloat(match[1]);
     var isFloat = match[1].indexOf('.') !== -1;
-    var duration = 1400;
-    var start    = performance.now();
-
+    var duration = 1400, start = performance.now();
     function step(now) {
-      var progress = Math.min((now - start) / duration, 1);
-      var eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      var current  = target * eased;
-      var display  = isFloat ? current.toFixed(1) : Math.round(current);
-      // Keep the plus/% element intact
+      var p = Math.min((now - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      var current = target * eased;
       var plus = el.querySelector('.svc-result-plus');
-      var plusText = plus ? plus.outerHTML : '';
-      el.innerHTML = display + plusText;
-      if (progress < 1) requestAnimationFrame(step);
+      var plusHTML = plus ? plus.outerHTML : '';
+      el.innerHTML = (isFloat ? current.toFixed(1) : Math.round(current)) + plusHTML;
+      if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
-
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          io.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) { animateCounter(entry.target); io.unobserve(entry.target); }
       });
     }, { threshold: 0.5 });
     counters.forEach(function (el) { io.observe(el); });
   }
 })();
 
-// ─── Services Contact Form ────────────────────────────
+// ─── Contact Form (real Formspree submission) ─────────
 (function () {
   var form   = qs('#contact-form-svc');
   var status = qs('#svc-cf-status');
-  if (!form || !status) return;
+  if (!form) return;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    var name    = (form.querySelector('[name="name"]') || {}).value || '';
-    var email   = (form.querySelector('[name="email"]') || {}).value || '';
+    var name    = (form.querySelector('[name="name"]')    || {}).value || '';
+    var email   = (form.querySelector('[name="email"]')   || {}).value || '';
     var message = (form.querySelector('[name="message"]') || {}).value || '';
 
     if (!name.trim() || !email.trim() || !message.trim()) {
-      status.textContent = 'Please fill in all required fields.';
-      status.style.color = '#e03030';
-      return;
+      setStatus(status, 'Please fill in all required fields.', 'error'); return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      status.textContent = 'Please enter a valid email address.';
-      status.style.color = '#e03030';
-      return;
+      setStatus(status, 'Please enter a valid email address.', 'error'); return;
     }
 
-    // Simulate send
     var btn = form.querySelector('.cf-submit');
     if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-    status.textContent = '';
 
-    setTimeout(function () {
-      status.textContent = '✓ Message sent! We\'ll be in touch within 1 business day.';
-      status.style.color = '#3a6d00';
-      form.reset();
+    fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, message: message }),
+    })
+    .then(function (res) {
+      if (res.ok) {
+        setStatus(status, "✓ Message sent! We'll be in touch within 1 business day.", 'success');
+        form.reset();
+      } else { throw new Error('failed'); }
+    })
+    .catch(function () {
+      setStatus(status, 'Something went wrong. Please email hello@adding.marketing', 'error');
+    })
+    .finally(function () {
       if (btn) { btn.disabled = false; btn.textContent = 'Send Message →'; }
-    }, 1200);
+    });
   });
+
+  function setStatus(el, msg, type) {
+    if (!el) return;
+    el.textContent = msg;
+    el.className   = 'cf-status cf-status--' + type;
+  }
 })();
 
 // ─── Newsletter Form ──────────────────────────────────
 (function () {
   var form   = qs('#newsletter-form-svc');
   var status = qs('#nl-status-svc');
-  if (!form || !status) return;
-
+  if (!form) return;
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var input = form.querySelector('[name="email"]');
-    var email = input ? input.value.trim() : '';
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      status.textContent = 'Please enter a valid email.';
-      status.style.color = '#e03030';
+    var email = (form.querySelector('[name="email"]') || {}).value || '';
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      if (status) { status.textContent = 'Please enter a valid email.'; status.className = 'cf-status cf-status--error'; }
       return;
     }
-    status.textContent = '✓ You\'re subscribed!';
-    status.style.color = '#3a6d00';
+    if (status) { status.textContent = "✓ You're subscribed!"; status.className = 'cf-status cf-status--success'; }
     form.reset();
   });
-})();
-
-// ─── Language Switcher ────────────────────────────────
-(function () {
-  function applyLang(code) {
-    var labels = { en: '🇺🇸 En', fr: '🇫🇷 Fr', es: '🇪🇸 Es', tr: '🇹🇷 Tr' };
-    var langBtn = qs('.lang-btn');
-    if (langBtn) {
-      langBtn.innerHTML =
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
-        + ' ' + (labels[code] || 'En') + ' <span aria-hidden="true">▾</span>';
-    }
-    var mobileSelect = qs('.mobile-lang select');
-    if (mobileSelect) mobileSelect.value = code;
-    document.documentElement.lang = code;
-    try { localStorage.setItem('ad-ding-lang', code); } catch(e) {}
-  }
-
-  qsa('.lang-menu button[data-lang]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      applyLang(btn.getAttribute('data-lang'));
-    });
-  });
-
-  var mobileSelect = qs('.mobile-lang select');
-  if (mobileSelect) {
-    mobileSelect.addEventListener('change', function () { applyLang(this.value); });
-  }
-
-  var saved;
-  try { saved = localStorage.getItem('ad-ding-lang'); } catch(e) {}
-  if (saved) applyLang(saved);
 })();
