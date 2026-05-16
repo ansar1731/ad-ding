@@ -1558,7 +1558,7 @@ section#Ad-Ding\!-hero {
 
 .qa-hero-card {
   /* max-width: 1200px;  */
-  margin: 0 auto; background: #1e1533;
+  margin: 40px 24px; background: #1e1533;
   border-radius: 28px; padding: 3rem 3.75rem 2rem;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   overflow: hidden; position: relative; gap: 1rem;
