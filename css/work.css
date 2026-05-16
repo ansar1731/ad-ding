@@ -239,7 +239,7 @@
   font-weight: 700;
 }
 
-/* ── Results row ── */
+/* ── Results row ──
 .wk-results-row {
   display: flex; gap: 0; flex-wrap: wrap;
   border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden;
@@ -265,7 +265,7 @@
 .wk-result-label {
   font-size: 0.7rem; color: rgba(0,0,0,0.45);
   font-weight: 500; margin-top: 3px; text-align: center;
-}
+} */
 
 /* ── Services tags ── */
 .wk-services-used {
