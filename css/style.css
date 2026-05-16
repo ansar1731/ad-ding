@@ -1547,6 +1547,15 @@ h1.hero-headline {
   padding: 60px 24px;
   background: #fffceb;
 }
+
+section#Ad-Ding\!-hero {
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    color: #121212;
+    overflow: hidden;
+    position: relative;
+}
+
 .qa-hero-card {
   /* max-width: 1200px;  */
   margin: 0 auto; background: #1e1533;
